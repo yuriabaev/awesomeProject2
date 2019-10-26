@@ -7,7 +7,7 @@
  */
 //import EasyBluetooth from 'easy-bluetooth-classic'
 import BluetoothSerial from 'react-native-bluetooth-serial'
-
+import Toast from '@remobile/react-native-toast'
 import React, { Component } from 'react'
 import {
   SafeAreaView,
@@ -24,34 +24,81 @@ import {
   Colors,
 } from 'react-native/Libraries/NewAppScreen'
 
+const log = (...args) => {
+  Toast.showShortBottom(...args)
+  console.log(...args)
+}
+
 export default class App extends Component {
-  componentWillMount () {
+  componentDidMount () {
     Promise.all([
       BluetoothSerial.isEnabled(),
       BluetoothSerial.list()
     ])
       .then((values) => {
-        const [ isEnabled, devices ] = values
-        console.log('isEnabled,  devices',isEnabled, devices)
-        this.setState({ isEnabled, devices })
+        const [isEnabled, devices] = values
+        log('isEnabled,  devices', isEnabled, devices)
+        this.setState({isEnabled, devices})
         const device = devices[0]
         BluetoothSerial.connect(device.id)
           .then((res) => {
-            console.log(`Connected to device  ${device.name}`)
-            this.setState({ device, connected: true, connecting: false })
+            log(`Connected to device  ${device.name}`)
+            this.setState({device, connected: true, connecting: false})
           })
-          .catch((err) => console.log(err.message))
+          .catch((err) => log(err.message))
       })
 
-    BluetoothSerial.on('bluetoothEnabled', () => console.log('Bluetooth enabled'))
-    BluetoothSerial.on('bluetoothDisabled', () => console.log('Bluetooth disabled'))
-    BluetoothSerial.on('error', (err) => console.log(`Error: ${err.message}`))
+    BluetoothSerial.on('error', (err) => log(`Error: ${err.message}`))
+    BluetoothSerial.on('data', (data) => log('data:' + data))
+    BluetoothSerial.on('rawData', (data) => log('rawData:' + data))
     BluetoothSerial.on('connectionLost', () => {
       if (this.state.device) {
-        console.log(`Connection to device ${this.state.device.name} has been lost`)
+        log(`Connection to device ${this.state.device.name} has been lost`)
       }
-      this.setState({ connected: false })
+      this.setState({connected: false})
     })
+    BluetoothSerial.on('read', (data) => {
+      console.log('Reading data: ', data)
+    })
+  }
+
+  connect = () => {
+    Promise.all([
+      BluetoothSerial.isEnabled(),
+      BluetoothSerial.list()
+    ])
+      .then((values) => {
+        const [isEnabled, devices] = values
+        log('isEnabled,  devices', isEnabled, devices)
+        this.setState({isEnabled, devices})
+        const device = devices[0]
+        BluetoothSerial.connect(device.id)
+          .then((res) => {
+            log(`Connected to device  ${device.name}`)
+            this.setState({device, connected: true, connecting: false})
+          })
+          .catch((err) => log(err.message))
+      })
+  }
+
+  doWater = () => {
+    return BluetoothSerial.write('water')
+      .then((res) => {
+        log('Successfuly wrote to device ' + res)
+        this.setState({connected: true})
+      })
+      .catch((err) => log(err.message))
+  }
+
+  getDurationTimeout = () => {
+    return BluetoothSerial.write('get_watering_duration')
+      .then((res) => {
+        log('get_watering_duration:' + res)
+        BluetoothSerial.readFromDevice().then((res) => {
+          log('res:' + res)
+        })
+      })
+      .catch((err) => log(err.message))
   }
 
   render () {
@@ -68,14 +115,11 @@ export default class App extends Component {
                 <Text style={styles.footer}>Engine: Hermes</Text>
               </View>
             )}
-            <Button title={'ff'} onPress={ () => {
-              return BluetoothSerial.write('water')
-              .then((res) => {
-                console.log('Successfuly wrote to device')
-                this.setState({ connected: true })
-              })
-              .catch((err) => console.log(err.message))
-            }}></Button>
+            <Button title={'connect'} onPress={this.connect}/>
+            <Text style={styles.sectionTitle}>Step One</Text>
+            <Button title={'water'} onPress={this.doWater}/>
+            <Text style={styles.sectionTitle}>Step One</Text>
+            <Button title={'Get Duration Timeout'} onPress={this.getDurationTimeout}/>
             <View style={styles.body}>
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}>Step One</Text>
