@@ -5,7 +5,8 @@
  * @format
  * @flow
  */
-import EasyBluetooth from 'easy-bluetooth-classic'
+//import EasyBluetooth from 'easy-bluetooth-classic'
+import BluetoothSerial from 'react-native-bluetooth-serial'
 
 import React, { Component } from 'react'
 import {
@@ -24,57 +25,33 @@ import {
 } from 'react-native/Libraries/NewAppScreen'
 
 export default class App extends Component {
-  componentDidMount () {
-    let config = {
-      uuid: '00001101-0000-1000-8000-00805f9b34fb',
-      deviceName: 'Mi A2',
-      bufferSize: 1024,
-      characterDelimiter: '\n'
-    }
-
-    EasyBluetooth.init(config)
-      .then(function (config) {
-        console.log('config done!')
+  componentWillMount () {
+    Promise.all([
+      BluetoothSerial.isEnabled(),
+      BluetoothSerial.list()
+    ])
+      .then((values) => {
+        const [ isEnabled, devices ] = values
+        console.log('isEnabled,  devices',isEnabled, devices)
+        this.setState({ isEnabled, devices })
+        const device = devices[0]
+        BluetoothSerial.connect(device.id)
+          .then((res) => {
+            console.log(`Connected to device  ${device.name}`)
+            this.setState({ device, connected: true, connecting: false })
+          })
+          .catch((err) => console.log(err.message))
       })
-      .catch(function (ex) {
-        console.warn(ex)
-      })
 
-    this.onDeviceFoundEvent = EasyBluetooth.addOnDeviceFoundListener(this.onDeviceFound.bind(this));
-    this.onStatusChangeEvent = EasyBluetooth.addOnStatusChangeListener(this.onStatusChange.bind(this));
-    this.onDataReadEvent = EasyBluetooth.addOnDataReadListener(this.onDataRead.bind(this));
-    this.onDeviceNameEvent = EasyBluetooth.addOnDeviceNameListener(this.onDeviceName.bind(this));
-  }
-
-  onDeviceFound (device) {
-    console.log('onDeviceFound')
-    console.log(device)
-
-    if (device.name === 'IXI') {
-      this.setState({device})
-    }
-  }
-
-  onStatusChange (status) {
-    console.log('onStatusChange')
-    console.log(status)
-  }
-
-  onDataRead (data) {
-    console.log('onDataRead')
-    console.log(data)
-  }
-
-  onDeviceName (name) {
-    console.log('onDeviceName')
-    console.log(name)
-  }
-
-  componentWillUnmount () {
-    this.onDeviceFoundEvent.remove()
-    this.onStatusChangeEvent.remove()
-    this.onDataReadEvent.remove()
-    this.onDeviceNameEvent.remove()
+    BluetoothSerial.on('bluetoothEnabled', () => console.log('Bluetooth enabled'))
+    BluetoothSerial.on('bluetoothDisabled', () => console.log('Bluetooth disabled'))
+    BluetoothSerial.on('error', (err) => console.log(`Error: ${err.message}`))
+    BluetoothSerial.on('connectionLost', () => {
+      if (this.state.device) {
+        console.log(`Connection to device ${this.state.device.name} has been lost`)
+      }
+      this.setState({ connected: false })
+    })
   }
 
   render () {
@@ -91,16 +68,13 @@ export default class App extends Component {
                 <Text style={styles.footer}>Engine: Hermes</Text>
               </View>
             )}
-            <Button title={'ff'} onPress={() => {
-              console.log('searching..')
-              EasyBluetooth.startScan()
-                .then(function (devices) {
-                  console.log('all devices found:')
-                  console.log(devices)
-                })
-                .catch(function (ex) {
-                  console.warn(ex)
-                })
+            <Button title={'ff'} onPress={ () => {
+              return BluetoothSerial.write('water')
+              .then((res) => {
+                console.log('Successfuly wrote to device')
+                this.setState({ connected: true })
+              })
+              .catch((err) => console.log(err.message))
             }}></Button>
             <View style={styles.body}>
               <View style={styles.sectionContainer}>
