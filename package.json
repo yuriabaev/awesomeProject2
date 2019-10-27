@@ -13,7 +13,8 @@
     "easy-bluetooth-classic": "^1.0.4",
     "react": "16.9.0",
     "react-native": "0.61.2",
-    "react-native-bluetooth-serial": "^1.0.0-rc1"
+    "react-native-bluetooth-serial": "^1.0.0-rc1",
+    "@remobile/react-native-toast": "latest"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",
