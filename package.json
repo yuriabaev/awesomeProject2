@@ -10,11 +10,17 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.25",
+    "@fortawesome/free-regular-svg-icons": "^5.11.2",
+    "@fortawesome/free-solid-svg-icons": "^5.11.2",
+    "@fortawesome/react-native-fontawesome": "^0.1.0",
+    "@react-native-community/slider": "^2.0.2",
+    "@remobile/react-native-toast": "latest",
     "easy-bluetooth-classic": "^1.0.4",
     "react": "16.9.0",
     "react-native": "0.61.2",
     "react-native-bluetooth-serial": "^1.0.0-rc1",
-    "@remobile/react-native-toast": "latest"
+    "react-native-svg": "^9.13.3"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",

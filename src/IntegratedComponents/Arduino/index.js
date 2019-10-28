@@ -2,9 +2,8 @@ import Bluetooth from 'Bluetooth'
 
 const bluetooth = new Bluetooth()
 
-
 export const connect = async () => {
-  await bluetooth.connect("ESP32_LED_Control")
+  await bluetooth.connect('ESP32_LED_Control')
 }
 
 export const water = async () => {
@@ -15,9 +14,9 @@ export const getWateringDuration = async () => {
 }
 
 export const setWateringDuration = async (duration) => {
-  await this.sendCommand(`set_watering_duration ${duration}`)
+  await this.sendCommand(`set_watering_duration ${duration * 1000}`)
 }
 
 export const getTimeToNextWater = async () => {
-  return  bluetooth.sendCommand('time')
+  return bluetooth.sendCommand('time')
 }

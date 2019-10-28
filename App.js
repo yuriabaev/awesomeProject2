@@ -6,7 +6,7 @@
  * @flow
  */
 import React, { Component } from 'react'
-import * as Arduino from 'src/IntegratedComponents/Arduino'
+//import * as Arduino from 'src/IntegratedComponents/Arduino'
 import {
   SafeAreaView,
   StyleSheet,
@@ -16,10 +16,13 @@ import {
   Button,
   Text,
   StatusBar,
+  TouchableHighlight
 } from 'react-native'
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
+import Slider from '@react-native-community/slider'
 
 import {
-  Header,
   Colors,
 } from 'react-native/Libraries/NewAppScreen'
 
@@ -39,12 +42,12 @@ export default class App extends Component {
   }
 
   connect = () => {
-    Arduino.connect()
+    //Arduino.connect()
   }
 
   doWater = async () => {
     try {
-      await Arduino.water()
+      // await Arduino.water()
     } catch
       (err) {
       log(err.message)
@@ -53,8 +56,8 @@ export default class App extends Component {
 
   getDurationTimeout = async () => {
     try {
-      const watering_duration = await Arduino.getWateringDuration()
-      this.setState({watering_duration, desiredDuration: watering_duration})
+      // const watering_duration = await Arduino.getWateringDuration()
+      // this.setState({watering_duration, desiredDuration: watering_duration})
     } catch
       (err) {
       log(err.message)
@@ -63,7 +66,7 @@ export default class App extends Component {
 
   setDurationTimeout = async () => {
     try {
-     await Arduino.setWateringDuration(this.state.desiredDuration)
+      //await Arduino.setWateringDuration(this.state.desiredDuration)
     } catch
       (err) {
       log(err.message)
@@ -82,24 +85,34 @@ export default class App extends Component {
           <ScrollView
             contentInsetAdjustmentBehavior="automatic"
             style={styles.scrollView}>
-            <Header/>
-            {global.HermesInternal == null ? null : (
-              <View style={styles.engine}>
-                <Text style={styles.footer}>Engine: Hermes</Text>
-              </View>
-            )}
-            <Text style={styles.sectionTitle}>connected: {this.state.connected.toString()}</Text>
-            <Button title={'connect'} onPress={this.connect}/>
-            <Text style={styles.sectionTitle}>Step One</Text>
+            {!this.state.connected &&
+            <View>
+              <TouchableHighlight onPress={this.connect} underlayColor="white">
+                <View style={styles.reconnect}>
+                  <Text style={styles.buttonText}>reconnect </Text>
+                  <FontAwesomeIcon icon={faSyncAlt} marginLeft={10}/>
+                </View>
+              </TouchableHighlight>
+            </View>
+            }
+
             <Button title={'water'} onPress={this.doWater}/>
-            <Text style={styles.sectionTitle}>Step One</Text>
             <Button title={'Get Duration Timeout'} onPress={this.getDurationTimeout}/>
-            <TextInput
-              style={{height: 40, borderColor: 'gray', borderWidth: 1}}
-              onChangeText={text => this.onChangeDurationText(text)}
-              value={this.state.desiredDuration.toString()}
-              placeHolder="fff"
-            />
+            <View style={styles.durationSelectors}>
+              <Slider
+                style={{width: 200, height: 40}}
+                minimumValue={0}
+                maximumValue={10}
+                step={1}
+                minimumTrackTintColor="#FFFFFF"
+                maximumTrackTintColor="#000000"
+                value={this.state.desiredDuration}
+                onValueChange={text => this.onChangeDurationText(text)}
+              />
+              <Text style={styles.durationText} border={1}>
+                {this.state.desiredDuration.toString()} seconds
+              </Text>
+            </View>
             <Button title={'Set Duration Timeout'} onPress={this.setDurationTimeout}/>
 
 
@@ -117,6 +130,9 @@ const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: Colors.lighter,
   },
+  buttonText:{
+    textAlign: 'center',
+  },
   engine: {
     position: 'absolute',
     right: 0,
@@ -133,6 +149,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.black,
   },
+  durationSelectors: {
+    flex: 1, flexDirection: 'row'
+  },
+  durationText:{
+    textAlign: 'center',
+    textAlignVertical: "center",
+    marginLeft:10
+  },
   sectionDescription: {
     marginTop: 8,
     fontSize: 18,
@@ -141,6 +165,9 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
+  },
+  reconnect: {
+    flexDirection: 'row', margin: 10
   },
   footer: {
     color: Colors.dark,
