@@ -86,10 +86,10 @@ export default class App extends Component {
             contentInsetAdjustmentBehavior="automatic"
             style={styles.scrollView}>
             {!this.state.connected &&
-            <View>
+            <View style={{width: 150}}>
               <TouchableHighlight onPress={this.connect} underlayColor="white">
                 <View style={styles.reconnect}>
-                  <Text style={styles.buttonText}>reconnect </Text>
+                  <Text style={styles.buttonText}>reconnect</Text>
                   <FontAwesomeIcon icon={faSyncAlt} marginLeft={10}/>
                 </View>
               </TouchableHighlight>
@@ -130,8 +130,10 @@ const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: Colors.lighter,
   },
-  buttonText:{
+  buttonText: {
     textAlign: 'center',
+    textAlignVertical: 'center',
+    margin:3
   },
   engine: {
     position: 'absolute',
@@ -152,10 +154,10 @@ const styles = StyleSheet.create({
   durationSelectors: {
     flex: 1, flexDirection: 'row'
   },
-  durationText:{
+  durationText: {
     textAlign: 'center',
-    textAlignVertical: "center",
-    marginLeft:10
+    textAlignVertical: 'center',
+    marginLeft: 10
   },
   sectionDescription: {
     marginTop: 8,
@@ -167,7 +169,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   reconnect: {
-    flexDirection: 'row', margin: 10
+    flexDirection: 'row',
+    margin: 10,
+    borderWidth: 1,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems:'center'
   },
   footer: {
     color: Colors.dark,
