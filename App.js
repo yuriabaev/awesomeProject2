@@ -17,12 +17,14 @@ import {
   Text,
   StatusBar,
   TouchableHighlight,
-  ImageBackground
+  ImageBackground,
+  Alert,
+  Modal
 } from 'react-native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
 import Slider from '@react-native-community/slider'
-import { Container, Header, Content,Button as ButtonNB } from 'native-base'
+import { Container, Content, Card } from 'native-base'
 import DashboardButton from './src/Components/DashboardButton'
 import {
   Colors,
@@ -32,15 +34,47 @@ const log = (...args) => {
   console.log(...args)
 }
 
+function msToTime (s) {
+
+  // Pad to 2 or 3 digits, default is 2
+  function pad (n, z) {
+    z = z || 2
+    return ('00' + n).slice(-z)
+  }
+
+  const mm = s
+
+  var secs = s % 60
+  s = (s - secs) / 60
+  var mins = s % 60
+  s = (s - mins) / 60
+  var hrs = s % 24
+  s = (s - hrs) / 24
+  var days = s
+
+  return pad(days) + ':' + pad(hrs) + ':' + pad(mins) + ':' + pad(secs)
+}
+
 export default class App extends Component {
   state = {
     connected: false,
     watering_duration: 0,
-    desiredDuration: 0
+    desiredDuration: 0,
+    modal: false,
+    time: 60 * 60 * 24 * 3,
+    interval: 0
   }
 
   componentDidMount () {
     this.connect()
+    const interval = setInterval(() => {
+      this.setState({time: this.state.time - 1})
+    }, 1000)
+    this.setState({interval})
+  }
+
+  componentWillUnmount () {
+    clearInterval(this.state.interval)
   }
 
   connect = () => {
@@ -68,12 +102,13 @@ export default class App extends Component {
   }
 
   setDurationTimeout = async () => {
-    try {
-      //await Arduino.setWateringDuration(this.state.desiredDuration)
-    } catch
-      (err) {
-      log(err.message)
-    }
+    this.setState({modal: true})
+    // try {
+    //   //await Arduino.setWateringDuration(this.state.desiredDuration)
+    // } catch
+    //   (err) {
+    //   log(err.message)
+    // }
   }
 
   onChangeDurationText = (text) => {
@@ -85,13 +120,13 @@ export default class App extends Component {
       <>
         <Container>
           <ImageBackground source={require('./src/assets/download.jpg')} style={{width: '100%', height: '100%'}}>
-            <Content  contentContainerStyle={{ height: '100%'}}>
+            <Content contentContainerStyle={{height: '100%'}}>
               <StatusBar barStyle="dark-content"/>
-              <SafeAreaView style={{ borderWidth: 2, borderColor: 'red', height: '100%'}}>
+              <SafeAreaView style={{borderWidth: 2, borderColor: 'red', height: '100%'}}>
                 {/*<ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>*/}
                 {!this.state.connected &&
                 <View style={{width: 150, alignSelf: 'flex-start', flex: 1}}>
-                  <TouchableHighlight onPress={this.connect} >
+                  <TouchableHighlight onPress={this.connect}>
                     <View style={styles.reconnect}>
                       <Text style={styles.buttonText}>reconnect</Text>
                       <FontAwesomeIcon icon={faSyncAlt} marginLeft={10}/>
@@ -99,44 +134,34 @@ export default class App extends Component {
                   </TouchableHighlight>
                 </View>
                 }
-                <View style={{justifyContent: 'flex-start', borderWidth: 2, borderColor: 'blue', flex: 12}}>
-                  <View style={styles.waterButtons}>
 
+                <View style={{justifyContent: 'flex-start', borderWidth: 2, borderColor: 'blue', flex: 12}}>
+                  <View style={{borderWidth:2,alignItems: 'center'}}>
+                    <Text>{msToTime(this.state.time)}</Text>
+                  </View>
+                  <View style={styles.waterButtons}>
                     <DashboardButton onPress={this.doWater}>water</DashboardButton>
                     <DashboardButton onPress={this.getDurationTimeout}>get duration timeout</DashboardButton>
-
-
-
-                    {/*<TouchableHighlight onPress={this.doWater} underlayColor="white">*/}
-                    {/*  <View style={styles.waterButtons_btns}>*/}
-                    {/*    <Text style={styles.waterbuttonText}>Water</Text>*/}
-                    {/*  </View>*/}
-                    {/*</TouchableHighlight>*/}
-                    {/*<TouchableHighlight onPress={this.getDurationTimeout} underlayColor="white">*/}
-                    {/*  <View style={styles.waterButtons_btns}>*/}
-                    {/*    <Text style={styles.waterbuttonText}>Get Timeout</Text>*/}
-                    {/*  </View>*/}
-                    {/*</TouchableHighlight>*/}
-
+                    <DashboardButton onPress={this.setDurationTimeout}>set duration timeout</DashboardButton>
                   </View>
-                  <View style={styles.durationSelectors}>
-                    <Slider
-                      style={{width: 200, height: 40}}
-                      minimumValue={0}
-                      maximumValue={10}
-                      step={1}
-                      minimumTrackTintColor="#FFFFFF"
-                      maximumTrackTintColor="#000000"
-                      value={this.state.desiredDuration}
-                      onValueChange={text => this.onChangeDurationText(text)}
-                    />
-                    <Text style={styles.durationText} border={1}>
-                      {this.state.desiredDuration.toString()} seconds
-                    </Text>
-                  </View>
-                  <View style={{flex:1}}>
-                    <Button title={'Set Duration Timeout'} onPress={this.setDurationTimeout}/>
-                  </View>
+                  {/*<View style={styles.durationSelectors}>*/}
+                  {/*  <Slider*/}
+                  {/*    style={{width: 200, height: 40}}*/}
+                  {/*    minimumValue={0}*/}
+                  {/*    maximumValue={10}*/}
+                  {/*    step={1}*/}
+                  {/*    minimumTrackTintColor="#FFFFFF"*/}
+                  {/*    maximumTrackTintColor="#000000"*/}
+                  {/*    value={this.state.desiredDuration}*/}
+                  {/*    onValueChange={text => this.onChangeDurationText(text)}*/}
+                  {/*  />*/}
+                  {/*  <Text style={styles.durationText} border={1}>*/}
+                  {/*    {this.state.desiredDuration.toString()} seconds*/}
+                  {/*  </Text>*/}
+                  {/*</View>*/}
+                  {/*<View style={{flex: 1}}>*/}
+                  {/*  <Button title={'Set Duration Timeout'} onPress={this.setDurationTimeout}/>*/}
+                  {/*</View>*/}
                   <View style={styles.state}>
                     <Text style={styles.sectionTitle}>{JSON.stringify(this.state, null, 2)}</Text>
                   </View>
@@ -152,11 +177,12 @@ export default class App extends Component {
 }
 
 const styles = StyleSheet.create({
+
   scrollView: {
     backgroundColor: Colors.lighter,
   },
   buttonText: {
-    color:'white',
+    color: 'white',
     textAlign: 'center',
     textAlignVertical: 'center',
     margin: 3
@@ -168,7 +194,7 @@ const styles = StyleSheet.create({
   state: {
     backgroundColor: Colors.white,
     borderWidth: 1,
-    flex:1
+    flex: 1
   },
   sectionContainer: {
     marginTop: 32,
@@ -180,9 +206,9 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
   waterButtons: {
-     // flexDirection: 'row',
+    // flexDirection: 'row',
     justifyContent: 'center',
-    flex:5,
+    flex: 5,
     //height: '35%'
 
   },
@@ -190,16 +216,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     //flex:1,
     borderRadius: 10,
-    margin:10,
+    margin: 10,
 
     // minWidth: '45%',
-     // flexBasis: 150
+    // flexBasis: 150
   },
   waterButtons_btns2: {
     color: 'green',
     justifyContent: 'center',
     borderRadius: 10,
-    margin:10
+    margin: 10
   },
   waterbuttonText: {
     textAlign: 'center',
@@ -211,7 +237,6 @@ const styles = StyleSheet.create({
     color: Colors.white,
   },
   durationSelectors: {
-    flex:1,
     flexDirection: 'row',
     backgroundColor: Colors.light.gray,
     borderWidth: 1
