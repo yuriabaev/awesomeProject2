@@ -81,23 +81,32 @@ export default class App extends Component {
     return (
       <>
         <StatusBar barStyle="dark-content"/>
-        <SafeAreaView>
-          <ScrollView
-            contentInsetAdjustmentBehavior="automatic"
-            style={styles.scrollView}>
-            {!this.state.connected &&
-            <View style={{width: 150}}>
-              <TouchableHighlight onPress={this.connect} underlayColor="white">
-                <View style={styles.reconnect}>
-                  <Text style={styles.buttonText}>reconnect</Text>
-                  <FontAwesomeIcon icon={faSyncAlt} marginLeft={10}/>
+        <SafeAreaView style={{justifyContent: 'flex-end', borderWidth: 2, borderColor: 'red',height:'100%'}}>
+          {/*<ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>*/}
+          {!this.state.connected &&
+          <View style={{width: 150, alignSelf: 'flex-start', flex: 1}}>
+            <TouchableHighlight onPress={this.connect} underlayColor="white">
+              <View style={styles.reconnect}>
+                <Text style={styles.buttonText}>reconnect</Text>
+                <FontAwesomeIcon icon={faSyncAlt} marginLeft={10}/>
+              </View>
+            </TouchableHighlight>
+          </View>
+          }
+          <View style={{justifyContent: 'flex-end', borderWidth: 2, borderColor: 'blue',flex:12}}>
+            <View style={styles.waterButtons}>
+              <TouchableHighlight onPress={this.doWater} underlayColor="white">
+                <View style={styles.waterButtons_btns}>
+                  <Text style={styles.waterbuttonText}>Water</Text>
                 </View>
               </TouchableHighlight>
-            </View>
-            }
+              <TouchableHighlight onPress={this.getDurationTimeout} underlayColor="white">
+                <View style={styles.waterButtons_btns}>
+                  <Text style={styles.waterbuttonText}>Get Timeout</Text>
+                </View>
+              </TouchableHighlight>
 
-            <Button title={'water'} onPress={this.doWater}/>
-            <Button title={'Get Duration Timeout'} onPress={this.getDurationTimeout}/>
+            </View>
             <View style={styles.durationSelectors}>
               <Slider
                 style={{width: 200, height: 40}}
@@ -113,13 +122,14 @@ export default class App extends Component {
                 {this.state.desiredDuration.toString()} seconds
               </Text>
             </View>
-            <Button title={'Set Duration Timeout'} onPress={this.setDurationTimeout}/>
-
-
+            <View>
+              <Button title={'Set Duration Timeout'} onPress={this.setDurationTimeout}/>
+            </View>
             <View style={styles.body}>
               <Text style={styles.sectionTitle}>{JSON.stringify(this.state, null, 2)}</Text>
             </View>
-          </ScrollView>
+          </View>
+          {/*</ScrollView>*/}
         </SafeAreaView>
       </>
     )
@@ -133,7 +143,7 @@ const styles = StyleSheet.create({
   buttonText: {
     textAlign: 'center',
     textAlignVertical: 'center',
-    margin:3
+    margin: 3
   },
   engine: {
     position: 'absolute',
@@ -141,29 +151,50 @@ const styles = StyleSheet.create({
   },
   body: {
     backgroundColor: Colors.white,
+    borderWidth: 1
   },
   sectionContainer: {
     marginTop: 32,
     paddingHorizontal: 24,
   },
   sectionTitle: {
-    fontSize: 24,
+    fontSize: 15,
     fontWeight: '600',
     color: Colors.black,
   },
+  waterButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    //flex:1,
+   // height: '35%'
+
+  },
+  waterButtons_btns: {
+    backgroundColor: 'green',
+    justifyContent: 'center',
+    //flex:1,
+    borderRadius: 20,
+    minWidth: '45%',
+    flexBasis: 150
+  },
+  waterbuttonText: {
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    margin: 20,
+    fontSize: 24,
+    fontWeight: '900',
+    fontFamily: 'Roboto',
+    color: Colors.white,
+  },
   durationSelectors: {
-    flex: 1, flexDirection: 'row'
+    flexDirection: 'row',
+    backgroundColor:Colors.light.gray,
+    borderWidth:1
   },
   durationText: {
     textAlign: 'center',
     textAlignVertical: 'center',
     marginLeft: 10
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
   },
   highlight: {
     fontWeight: '700',
@@ -174,7 +205,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     justifyContent: 'center',
-    alignItems:'center'
+    alignItems: 'center'
   },
   footer: {
     color: Colors.dark,
