@@ -4,11 +4,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
 import DashboardButton from '../Components/DashboardButton'
 import { Colors } from 'react-native/Libraries/NewAppScreen'
-import React,{Component} from 'react'
+import React, { Component } from 'react'
+
 const image = require('../assets/download.jpg')
 const log = (...args) => {
   console.log(...args)
 }
+const borderWidth = 0
 
 function msToTime (s) {
 
@@ -98,7 +100,7 @@ export default class HomeScreen extends Component {
           <ImageBackground source={image} style={{width: '100%', height: '100%'}}>
             <Content contentContainerStyle={{height: '100%'}}>
               <StatusBar barStyle="dark-content"/>
-              <SafeAreaView style={{borderWidth: 0, borderColor: 'red', height: '100%'}}>
+              <SafeAreaView style={{borderWidth, borderColor: 'red', height: '100%'}}>
                 {/*<ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>*/}
                 {!this.state.connected &&
                 <View style={{width: 150, alignSelf: 'flex-start', flex: 1}}>
@@ -111,12 +113,12 @@ export default class HomeScreen extends Component {
                 </View>
                 }
 
-                <View style={{justifyContent: 'flex-start', borderWidth: 0, borderColor: 'blue', flex: 12}}>
-                  <View style={{borderWidth:0,alignItems: 'center'}}>
-                    <Text style={{fontSize:40}}>{msToTime(this.state.time)}</Text>
+                <View style={{justifyContent: 'flex-start', borderWidth, borderColor: 'blue', flex: 12}}>
+                  <View style={{borderWidth, justifyContent: 'center', alignItems: 'center', flex: 2}}>
+                    <Text style={{borderWidth, fontSize: 40}}>{msToTime(this.state.time)}</Text>
                   </View>
                   <View style={styles.waterButtons}>
-                    <DashboardButton onPress={this.doWater}>water</DashboardButton>
+                    <DashboardButton onPress={this.doWater}>water plant</DashboardButton>
                     <DashboardButton onPress={this.getDurationTimeout}>get duration timeout</DashboardButton>
                     <DashboardButton onPress={this.setDurationTimeout}>set duration timeout</DashboardButton>
                   </View>
@@ -169,7 +171,7 @@ const styles = StyleSheet.create({
   },
   state: {
     backgroundColor: Colors.white,
-    borderWidth: 0,
+    borderWidth,
     flex: 1
   },
   sectionContainer: {
@@ -183,7 +185,7 @@ const styles = StyleSheet.create({
   },
   waterButtons: {
     // flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     flex: 5,
     //height: '35%'
 
@@ -215,7 +217,7 @@ const styles = StyleSheet.create({
   durationSelectors: {
     flexDirection: 'row',
     backgroundColor: Colors.light.gray,
-    borderWidth: 1
+    borderWidth
   },
   durationText: {
     textAlign: 'center',
@@ -229,7 +231,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'gray',
     flexDirection: 'row',
     margin: 10,
-    borderWidth: 1,
+    borderWidth,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center'

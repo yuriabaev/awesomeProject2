@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { Button as ButtonNB } from "native-base"
 import React from 'react'
-import { Colors } from 'react-native/Libraries/NewAppScreen'
 
  const DashboardButton = (props)=>{
   return (
