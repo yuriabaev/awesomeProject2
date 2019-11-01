@@ -16,7 +16,8 @@ import {
   Button,
   Text,
   StatusBar,
-  TouchableHighlight
+  TouchableHighlight,
+  ImageBackground
 } from 'react-native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
@@ -80,57 +81,59 @@ export default class App extends Component {
   render () {
     return (
       <>
-        <StatusBar barStyle="dark-content"/>
-        <SafeAreaView style={{justifyContent: 'flex-end', borderWidth: 2, borderColor: 'red',height:'100%'}}>
-          {/*<ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>*/}
-          {!this.state.connected &&
-          <View style={{width: 150, alignSelf: 'flex-start', flex: 1}}>
-            <TouchableHighlight onPress={this.connect} underlayColor="white">
-              <View style={styles.reconnect}>
-                <Text style={styles.buttonText}>reconnect</Text>
-                <FontAwesomeIcon icon={faSyncAlt} marginLeft={10}/>
-              </View>
-            </TouchableHighlight>
-          </View>
-          }
-          <View style={{justifyContent: 'flex-end', borderWidth: 2, borderColor: 'blue',flex:12}}>
-            <View style={styles.waterButtons}>
-              <TouchableHighlight onPress={this.doWater} underlayColor="white">
-                <View style={styles.waterButtons_btns}>
-                  <Text style={styles.waterbuttonText}>Water</Text>
+        <ImageBackground source={require('./src/assets/download.jpg')} style={{width: '100%', height: '100%'}}>
+          <StatusBar barStyle="dark-content"/>
+          <SafeAreaView style={{justifyContent: 'flex-end', borderWidth: 2, borderColor: 'red', height: '100%'}}>
+            {/*<ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>*/}
+            {!this.state.connected &&
+            <View style={{width: 150, alignSelf: 'flex-start', flex: 1}}>
+              <TouchableHighlight onPress={this.connect} underlayColor="white">
+                <View style={styles.reconnect}>
+                  <Text style={styles.buttonText}>reconnect</Text>
+                  <FontAwesomeIcon icon={faSyncAlt} marginLeft={10}/>
                 </View>
               </TouchableHighlight>
-              <TouchableHighlight onPress={this.getDurationTimeout} underlayColor="white">
-                <View style={styles.waterButtons_btns}>
-                  <Text style={styles.waterbuttonText}>Get Timeout</Text>
-                </View>
-              </TouchableHighlight>
+            </View>
+            }
+            <View style={{justifyContent: 'flex-end', borderWidth: 2, borderColor: 'blue', flex: 12}}>
+              <View style={styles.waterButtons}>
+                <TouchableHighlight onPress={this.doWater} underlayColor="white">
+                  <View style={styles.waterButtons_btns}>
+                    <Text style={styles.waterbuttonText}>Water</Text>
+                  </View>
+                </TouchableHighlight>
+                <TouchableHighlight onPress={this.getDurationTimeout} underlayColor="white">
+                  <View style={styles.waterButtons_btns}>
+                    <Text style={styles.waterbuttonText}>Get Timeout</Text>
+                  </View>
+                </TouchableHighlight>
 
+              </View>
+              <View style={styles.durationSelectors}>
+                <Slider
+                  style={{width: 200, height: 40}}
+                  minimumValue={0}
+                  maximumValue={10}
+                  step={1}
+                  minimumTrackTintColor="#FFFFFF"
+                  maximumTrackTintColor="#000000"
+                  value={this.state.desiredDuration}
+                  onValueChange={text => this.onChangeDurationText(text)}
+                />
+                <Text style={styles.durationText} border={1}>
+                  {this.state.desiredDuration.toString()} seconds
+                </Text>
+              </View>
+              <View>
+                <Button title={'Set Duration Timeout'} onPress={this.setDurationTimeout}/>
+              </View>
+              <View style={styles.body}>
+                <Text style={styles.sectionTitle}>{JSON.stringify(this.state, null, 2)}</Text>
+              </View>
             </View>
-            <View style={styles.durationSelectors}>
-              <Slider
-                style={{width: 200, height: 40}}
-                minimumValue={0}
-                maximumValue={10}
-                step={1}
-                minimumTrackTintColor="#FFFFFF"
-                maximumTrackTintColor="#000000"
-                value={this.state.desiredDuration}
-                onValueChange={text => this.onChangeDurationText(text)}
-              />
-              <Text style={styles.durationText} border={1}>
-                {this.state.desiredDuration.toString()} seconds
-              </Text>
-            </View>
-            <View>
-              <Button title={'Set Duration Timeout'} onPress={this.setDurationTimeout}/>
-            </View>
-            <View style={styles.body}>
-              <Text style={styles.sectionTitle}>{JSON.stringify(this.state, null, 2)}</Text>
-            </View>
-          </View>
-          {/*</ScrollView>*/}
-        </SafeAreaView>
+            {/*</ScrollView>*/}
+          </SafeAreaView>
+        </ImageBackground>
       </>
     )
   }
@@ -166,7 +169,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     //flex:1,
-   // height: '35%'
+    // height: '35%'
 
   },
   waterButtons_btns: {
@@ -188,8 +191,8 @@ const styles = StyleSheet.create({
   },
   durationSelectors: {
     flexDirection: 'row',
-    backgroundColor:Colors.light.gray,
-    borderWidth:1
+    backgroundColor: Colors.light.gray,
+    borderWidth: 1
   },
   durationText: {
     textAlign: 'center',
