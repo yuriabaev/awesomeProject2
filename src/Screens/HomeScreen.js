@@ -33,6 +33,19 @@ function msToTime (s) {
   return pad(days) + ':' + pad(hrs) + ':' + pad(mins) + ':' + pad(secs)
 }
 
+
+const Reconnect = ({onPress})=> {
+
+  return (<View style={{width: 150, alignSelf: 'flex-start', flex: 1}}>
+    <TouchableHighlight onPress={onPress}>
+      <View style={styles.reconnect}>
+        <Text style={styles.buttonText}>reconnect</Text>
+        <FontAwesomeIcon icon={faSyncAlt} marginLeft={10}/>
+      </View>
+    </TouchableHighlight>
+  </View>)
+}
+
 export default class HomeScreen extends Component {
   state = {
     connected: false,
@@ -56,6 +69,7 @@ export default class HomeScreen extends Component {
   }
 
   connect = () => {
+    console.log('connect')
     //Arduino.connect()
   }
 
@@ -106,19 +120,11 @@ export default class HomeScreen extends Component {
               <StatusBar barStyle="dark-content"/>
               <SafeAreaView style={{borderWidth, borderColor: 'red', height: '100%'}}>
                 {/*<ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>*/}
-                {!this.state.connected &&
-                <View style={{width: 150, alignSelf: 'flex-start', flex: 1}}>
-                  <TouchableHighlight onPress={this.connect}>
-                    <View style={styles.reconnect}>
-                      <Text style={styles.buttonText}>reconnect</Text>
-                      <FontAwesomeIcon icon={faSyncAlt} marginLeft={10}/>
-                    </View>
-                  </TouchableHighlight>
-                </View>
-                }
+                {!this.state.connected && <Reconnect onPress={this.connect}/>}
 
                 <View style={{justifyContent: 'flex-start', borderWidth, borderColor: 'blue', flex: 12}}>
                   <View style={{borderWidth, justifyContent: 'center', alignItems: 'center', flex: 2}}>
+                    <Text style={{borderWidth, fontSize: 28}}>Next watering:</Text>
                     <Text style={{borderWidth, fontSize: 40}}>{msToTime(this.state.time)}</Text>
                   </View>
                   <View style={styles.waterButtons}>
@@ -126,24 +132,6 @@ export default class HomeScreen extends Component {
                     <DashboardButton onPress={this.getDurationTimeout}>get duration timeout</DashboardButton>
                     <DashboardButton onPress={this.setDurationTimeout}>set duration timeout</DashboardButton>
                   </View>
-                  {/*<View style={styles.durationSelectors}>*/}
-                  {/*  <Slider*/}
-                  {/*    style={{width: 200, height: 40}}*/}
-                  {/*    minimumValue={0}*/}
-                  {/*    maximumValue={10}*/}
-                  {/*    step={1}*/}
-                  {/*    minimumTrackTintColor="#FFFFFF"*/}
-                  {/*    maximumTrackTintColor="#000000"*/}
-                  {/*    value={this.state.desiredDuration}*/}
-                  {/*    onValueChange={text => this.onChangeDurationText(text)}*/}
-                  {/*  />*/}
-                  {/*  <Text style={styles.durationText} border={1}>*/}
-                  {/*    {this.state.desiredDuration.toString()} seconds*/}
-                  {/*  </Text>*/}
-                  {/*</View>*/}
-                  {/*<View style={{flex: 1}}>*/}
-                  {/*  <Button title={'Set Duration Timeout'} onPress={this.setDurationTimeout}/>*/}
-                  {/*</View>*/}
                   <View style={styles.state}>
                     <Text style={styles.sectionTitle}>{JSON.stringify(this.state, null, 2)}</Text>
                   </View>
@@ -178,10 +166,7 @@ const styles = StyleSheet.create({
     borderWidth,
     flex: 1
   },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
+
   sectionTitle: {
     fontSize: 15,
     fontWeight: '600',
@@ -194,43 +179,7 @@ const styles = StyleSheet.create({
     //height: '35%'
 
   },
-  waterButtons_btns: {
-    justifyContent: 'center',
-    //flex:1,
-    borderRadius: 10,
-    margin: 10,
 
-    // minWidth: '45%',
-    // flexBasis: 150
-  },
-  waterButtons_btns2: {
-    color: 'green',
-    justifyContent: 'center',
-    borderRadius: 10,
-    margin: 10
-  },
-  waterbuttonText: {
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    margin: 20,
-    fontSize: 24,
-    fontWeight: '900',
-    fontFamily: 'Roboto',
-    color: Colors.white,
-  },
-  durationSelectors: {
-    flexDirection: 'row',
-    backgroundColor: Colors.light.gray,
-    borderWidth
-  },
-  durationText: {
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    marginLeft: 10
-  },
-  highlight: {
-    fontWeight: '700',
-  },
   reconnect: {
     backgroundColor: 'gray',
     flexDirection: 'row',
@@ -239,13 +188,5 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center'
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
   },
 })

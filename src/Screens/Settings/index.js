@@ -1,15 +1,12 @@
-import { ImageBackground, SafeAreaView, StatusBar, StyleSheet, View, Slider } from 'react-native'
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
+import { ImageBackground, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native'
+import Slider from '@react-native-community/slider';
 import { Colors } from 'react-native/Libraries/NewAppScreen'
 import React, { Component } from 'react'
 import DashboardButton from '../../Components/DashboardButton'
-import { Container, Header, Content, Card, CardItem, Text, Body } from 'native-base'
+import { Container, Content, CardItem, Card, Text } from 'native-base'
 
 const image = require('../../assets/download.jpg')
-const log = (...args) => {
-  console.log(...args)
-}
+
 const borderWidth = 0
 
 export default class Settings extends Component {
@@ -35,7 +32,7 @@ export default class Settings extends Component {
 
     const {navigate} = this.props.navigation
 
-    navigate('Home', {name: 'Jane'})
+    navigate('Home')
     // try {
     //   //await Arduino.setWateringDuration(this.state.desiredDuration)
     // } catch
@@ -54,9 +51,14 @@ export default class Settings extends Component {
         <Container>
           <ImageBackground source={image} style={{width: '100%', height: '100%'}}>
             <Content  padder contentContainerStyle={{height: '100%',justifyContent: 'flex-end', borderWidth}}>
-              <SafeAreaView style={{borderWidth, borderColor: 'red', height: '100%'}}>
-                <View style={{justifyContent: 'flex-end', borderWidth, borderColor: 'blue'}}>
-                  <Card>
+              <SafeAreaView style={{borderWidth, borderColor: 'red'}}>
+                <View style={{justifyContent: 'center', borderWidth, borderColor: 'blue', height: '100%'}}>
+                  <View style={{justifyContent: 'center',flex:10}}>
+                   <Card >
+                  {/*<View>*/}
+                    <CardItem >
+                      <Text>Choose the amount of water </Text>
+                    </CardItem>
                     <CardItem>
                       <View style={styles.durationSelectors}>
                         <Slider
@@ -64,7 +66,7 @@ export default class Settings extends Component {
                           minimumValue={0}
                           maximumValue={10}
                           step={1}
-                          minimumTrackTintColor="#FFFFFF"
+                          minimumTrackTintColor="light blue"
                           maximumTrackTintColor="#000000"
                           value={this.state.desiredDuration}
                           onValueChange={text => this.onChangeDurationText(text)}
@@ -74,9 +76,12 @@ export default class Settings extends Component {
                         </Text>
                       </View>
                     </CardItem>
+                  {/*</View>*/}
                   </Card>
+                  </View>
+                  <View style={{justifyContent: 'center',flex:2}}>
                   <DashboardButton onPress={this.setDurationTimeout}>Set Duration Timeout</DashboardButton>
-
+                  </View>
                 </View>
                 <StatusBar barStyle="dark-content"/>
               </SafeAreaView>
