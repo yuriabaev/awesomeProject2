@@ -81,6 +81,10 @@ export default class HomeScreen extends Component {
 
   setDurationTimeout = async () => {
     this.setState({modal: true})
+
+    const {navigate} = this.props.navigation;
+
+    navigate('Settings')
     // try {
     //   //await Arduino.setWateringDuration(this.state.desiredDuration)
     // } catch
@@ -98,7 +102,7 @@ export default class HomeScreen extends Component {
       <>
         <Container>
           <ImageBackground source={image} style={{width: '100%', height: '100%'}}>
-            <Content contentContainerStyle={{height: '100%'}}>
+            <Content padder contentContainerStyle={{height: '100%'}}>
               <StatusBar barStyle="dark-content"/>
               <SafeAreaView style={{borderWidth, borderColor: 'red', height: '100%'}}>
                 {/*<ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>*/}

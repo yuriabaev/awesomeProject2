@@ -8,8 +8,23 @@
 import React  from 'react'
 
 import HomeScreen from './src/Screens/HomeScreen'
-
-export default HomeScreen
-
+import Settings from './src/Screens/Settings'
 
 
+import {createAppContainer} from 'react-navigation';
+import {createStackNavigator} from 'react-navigation-stack';
+
+const MainNavigator = createStackNavigator({
+  Home: {screen: HomeScreen},
+  Settings: {screen: Settings},
+},
+  {
+    headerMode: 'none',
+    navigationOptions: {
+      headerVisible: false,
+    }
+  });
+
+const App = createAppContainer(MainNavigator);
+
+export default App;
