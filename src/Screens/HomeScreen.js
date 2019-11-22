@@ -33,8 +33,7 @@ function msToTime (s) {
   return pad(days) + ':' + pad(hrs) + ':' + pad(mins) + ':' + pad(secs)
 }
 
-
-const Reconnect = ({onPress})=> {
+const Reconnect = ({onPress}) => {
 
   return (<View style={{width: 150, alignSelf: 'flex-start', flex: 1}}>
     <TouchableHighlight onPress={onPress}>
@@ -45,12 +44,12 @@ const Reconnect = ({onPress})=> {
     </TouchableHighlight>
   </View>)
 }
+export const WATERING_DURATION = 'watering_duration'
 
 export default class HomeScreen extends Component {
   state = {
     connected: false,
-    watering_duration: 0,
-    desiredDuration: 0,
+    [WATERING_DURATION]: 0,
     modal: false,
     time: 60 * 60 * 24 * 3,
     interval: 0
@@ -62,6 +61,8 @@ export default class HomeScreen extends Component {
       this.setState({time: this.state.time - 1})
     }, 1000)
     this.setState({interval})
+
+
   }
 
   componentWillUnmount () {
@@ -83,35 +84,40 @@ export default class HomeScreen extends Component {
     }
   }
 
-  getDurationTimeout = async () => {
+  fetchDurationTimeout = async () => {
+    const {navigation} = this.props
+
+    const wateringFromNavigation =  navigation.getParam(WATERING_DURATION)
+
+    if(wateringFromNavigation){
+
+    }
     try {
       // const watering_duration = await Arduino.getWateringDuration()
-      // this.setState({watering_duration, desiredDuration: watering_duration})
     } catch
       (err) {
       log(err.message)
     }
   }
 
-  setDurationTimeout = async () => {
-    this.setState({modal: true})
+  durationTimeout = () => {
+    const {navigation} = this.props
 
-    const {navigate} = this.props.navigation;
+    const wateringFromNavigation =  navigation.getParam(WATERING_DURATION) || 0
 
-    navigate('Settings')
-    // try {
-    //   //await Arduino.setWateringDuration(this.state.desiredDuration)
-    // } catch
-    //   (err) {
-    //   log(err.message)
-    // }
+    return wateringFromNavigation
   }
 
-  onChangeDurationText = (text) => {
-    this.setState({desiredDuration: text})
+  goToSettings = async () => {
+    this.setState({modal: true})
+
+    const {navigate} = this.props.navigation
+
+    navigate('Settings')
   }
 
   render () {
+    const durationTimeout = this.durationTimeout()
     return (
       <>
         <Container>
@@ -126,11 +132,13 @@ export default class HomeScreen extends Component {
                   <View style={{borderWidth, justifyContent: 'center', alignItems: 'center', flex: 2}}>
                     <Text style={{borderWidth, fontSize: 28}}>Next watering:</Text>
                     <Text style={{borderWidth, fontSize: 40}}>{msToTime(this.state.time)}</Text>
+                    <Text style={{borderWidth, fontSize: 28}}>watering
+                      duration: {durationTimeout} sec</Text>
                   </View>
                   <View style={styles.waterButtons}>
                     <DashboardButton onPress={this.doWater}>water plant</DashboardButton>
-                    <DashboardButton onPress={this.getDurationTimeout}>get duration timeout</DashboardButton>
-                    <DashboardButton onPress={this.setDurationTimeout}>set duration timeout</DashboardButton>
+                    <DashboardButton onPress={this.fetchDurationTimeout}>get duration timeout</DashboardButton>
+                    <DashboardButton onPress={this.goToSettings}>set duration timeout</DashboardButton>
                   </View>
                   <View style={styles.state}>
                     <Text style={styles.sectionTitle}>{JSON.stringify(this.state, null, 2)}</Text>
