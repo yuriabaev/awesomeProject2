@@ -138,7 +138,7 @@ export default class HomeScreen extends Component {
                   <View style={styles.waterButtons}>
                     <DashboardButton onPress={this.doWater}>water plant</DashboardButton>
                     <DashboardButton onPress={this.fetchDurationTimeout}>get duration timeout</DashboardButton>
-                    <DashboardButton onPress={this.goToSettings}>set duration timeout</DashboardButton>
+                    <DashboardButton onPress={this.goToSettings}>Settings</DashboardButton>
                   </View>
                   <View style={styles.state}>
                     <Text style={styles.sectionTitle}>{JSON.stringify(this.state, null, 2)}</Text>

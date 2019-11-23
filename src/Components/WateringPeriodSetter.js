@@ -1,8 +1,16 @@
-import { StyleSheet, Text, View,Picker } from 'react-native'
+import { StyleSheet, Text, View, Picker } from 'react-native'
 import { Card, CardItem } from 'native-base'
-import React ,{ useState } from 'react';
+import React, { useState } from 'react'
 
-const WateringPeriodSetter = ({onChange,value}) => {
+const borderWidth = 2
+const WateringPeriodSetter = ({onChange, periodType, periodValue}) => {
+  const onValueChange = (value) => {
+    onChange({
+      periodType: value.periodType || periodType,
+      periodValue: value.periodValue || periodValue,
+    })
+  }
+
   return (
     <View style={{justifyContent: 'center'}}>
       <Card>
@@ -10,14 +18,28 @@ const WateringPeriodSetter = ({onChange,value}) => {
           <Text>Watering Period:</Text>
         </CardItem>
         <CardItem>
-            <Picker>
-              <Picker.Item label="Java" value="java" />
-              <Picker.Item label="JavaScript" value="js" />
-            </Picker>
+
           <View style={styles.durationSelectors}>
             <Text style={styles.durationText} border={1}>
-              every 3 days
+              every
             </Text>
+            <Text style={styles.durationText} border={1}>
+              3
+            </Text>
+            <Picker
+              selectedValue={periodType}
+              style={{height: 50, width: 150, borderWidth, borderColor: 'blue',}}
+              onValueChange={(itemValue, itemIndex) => {
+
+                onValueChange({periodType: itemValue})
+
+              }}>
+              <Picker.Item label="Seconds" value="Seconds"/>
+              <Picker.Item label="Minutes" value="Minutes"/>
+              <Picker.Item label="Hours" value="Hours"/>
+              <Picker.Item label="Days" value="Days"/>
+            </Picker>
+
           </View>
         </CardItem>
       </Card>
@@ -27,18 +49,14 @@ const WateringPeriodSetter = ({onChange,value}) => {
 
 const styles = StyleSheet.create({
 
-  buttonText: {
-    color: 'white',
+  durationSelectors: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  durationText: {
     textAlign: 'center',
     textAlignVertical: 'center',
-    margin: 3
-  },
-
-  waterButtons_btns2: {
-    color: 'green',
-    justifyContent: 'center',
-    borderRadius: 10,
-    marginTop: 10
+    marginLeft: 10
   },
 })
 
