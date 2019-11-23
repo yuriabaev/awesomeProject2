@@ -1,5 +1,14 @@
 import { Container, Content } from 'native-base'
-import { ImageBackground, SafeAreaView, StatusBar, StyleSheet, Text, TouchableHighlight, View } from 'react-native'
+import {
+  ImageBackground,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+  ScrollView
+} from 'react-native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
 import DashboardButton from '../Components/DashboardButton'
@@ -192,7 +201,9 @@ export default class HomeScreen extends Component {
                     <DashboardButton onPress={this.goToSettings}>Settings</DashboardButton>
                   </View>
                   <View style={styles.state}>
-                    <Text style={styles.sectionTitle}>{JSON.stringify(this.state, null, 2)}</Text>
+                    <ScrollView>
+                      <Text style={styles.sectionTitle}>{JSON.stringify(this.state, null, 2)}</Text>
+                    </ScrollView>
                   </View>
                 </View>
                 {/*</ScrollView>*/}
@@ -234,7 +245,7 @@ const styles = StyleSheet.create({
   waterButtons: {
     // flexDirection: 'row',
     justifyContent: 'flex-start',
-    flex: 5,
+    flex: 2,
     //height: '35%'
 
   },
