@@ -5,6 +5,7 @@ import React, { Component } from 'react'
 import DashboardButton from '../../Components/DashboardButton'
 import { Container, Content, CardItem, Card, Text } from 'native-base'
 import { WATERING_DURATION } from '../HomeScreen'
+import WateringPeriodSetter from '../../Components/WateringPeriodSetter'
 
 const image = require('../../assets/download.jpg')
 
@@ -31,15 +32,15 @@ export default class Settings extends Component {
   setDurationTimeout = async () => {
     const {navigate} = this.props.navigation
 
-    // try {
-    //   //await Arduino.setWateringDuration(this.state.desiredDuration)
-    navigate('Home', {
-      [WATERING_DURATION]: this.state.desiredDuration,
-    })
-    // } catch
-    //   (err) {
-    //   log(err.message)
-    // }
+    try {
+      //   //await Arduino.setWateringDuration(this.state.desiredDuration)
+      navigate('Home', {
+        [WATERING_DURATION]: this.state.desiredDuration,
+      })
+    } catch
+      (err) {
+      log(err.message)
+    }
   }
 
   onChangeDurationText = (text) => {
@@ -48,39 +49,39 @@ export default class Settings extends Component {
 
   render () {
     return (
-      <>
         <Container>
           <ImageBackground source={image} style={{width: '100%', height: '100%'}}>
-            <Content padder contentContainerStyle={{height: '100%', justifyContent: 'flex-end', borderWidth}}>
+            <Content padder contentContainerStyle={{height: '100%', borderWidth}}>
               <SafeAreaView style={{borderWidth, borderColor: 'red'}}>
-                <View style={{justifyContent: 'center', borderWidth, borderColor: 'blue', height: '100%'}}>
-                  <View style={{justifyContent: 'center', flex: 10}}>
-                    <Card>
-                      {/*<View>*/}
-                      <CardItem>
-                        <Text>Choose the amount of water </Text>
-                      </CardItem>
-                      <CardItem>
-                        <View style={styles.durationSelectors}>
-                          <Slider
-                            style={{width: 200, height: 40}}
-                            minimumValue={0}
-                            maximumValue={10}
-                            step={1}
-                            minimumTrackTintColor="light blue"
-                            maximumTrackTintColor="#000000"
-                            value={this.state.desiredDuration}
-                            onValueChange={text => this.onChangeDurationText(text)}
-                          />
-                          <Text style={styles.durationText} border={1}>
-                            {this.state.desiredDuration.toString()} seconds
-                          </Text>
-                        </View>
-                      </CardItem>
-                      {/*</View>*/}
-                    </Card>
+                <View style={{justifyContent: 'space-around', borderWidth, borderColor: 'yellow',height: '100%'}}>
+                  <View style={{justifyContent: 'center', borderWidth, borderColor: 'blue'}}>
+                    <View style={{justifyContent: 'center'}}>
+                      <Card>
+                        <CardItem>
+                          <Text>Choose the amount of water </Text>
+                        </CardItem>
+                        <CardItem>
+                          <View style={styles.durationSelectors}>
+                            <Slider
+                              style={{width: 200, height: 40}}
+                              minimumValue={0}
+                              maximumValue={10}
+                              step={1}
+                              minimumTrackTintColor="light blue"
+                              maximumTrackTintColor="#000000"
+                              value={this.state.desiredDuration}
+                              onValueChange={text => this.onChangeDurationText(text)}
+                            />
+                            <Text style={styles.durationText} border={1}>
+                              {this.state.desiredDuration.toString()} seconds
+                            </Text>
+                          </View>
+                        </CardItem>
+                      </Card>
+                    </View>
+                    <WateringPeriodSetter value={this.state.value} onChange={(v)=>this.setState({value:v})}/>
                   </View>
-                  <View style={{justifyContent: 'center', flex: 2}}>
+                  <View style={{justifyContent: 'center'}}>
                     <DashboardButton onPress={this.setDurationTimeout}>Set Duration Timeout</DashboardButton>
                   </View>
                 </View>
@@ -89,10 +90,11 @@ export default class Settings extends Component {
             </Content>
           </ImageBackground>
         </Container>
-      </>
     )
   }
 }
+
+
 
 const styles = StyleSheet.create({
   durationSelectors: {
