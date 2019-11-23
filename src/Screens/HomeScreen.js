@@ -5,6 +5,7 @@ import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
 import DashboardButton from '../Components/DashboardButton'
 import { Colors } from 'react-native/Libraries/NewAppScreen'
 import React, { Component } from 'react'
+import { NavigationEvents } from 'react-navigation'
 
 const image = require('../assets/download.jpg')
 const log = (...args) => {
@@ -45,23 +46,39 @@ const Reconnect = ({onPress}) => {
   </View>)
 }
 export const WATERING_DURATION = 'watering_duration'
+export const WATERING_PERIOD_TIME_INITIAL = 'WATERING_PERIOD_TIME_INITIAL'
+export const WATERING_PERIOD_TIME_TEMP = 'WATERING_PERIOD_TIME_TEMP'
 
 export default class HomeScreen extends Component {
   state = {
     connected: false,
     [WATERING_DURATION]: 0,
     modal: false,
-    time: 60 * 60 * 24 * 3,
+    [WATERING_PERIOD_TIME_INITIAL]: 0,
+    [WATERING_PERIOD_TIME_TEMP]: 0,
     interval: 0
   }
 
   componentDidMount () {
     this.connect()
-    const interval = setInterval(() => {
-      this.setState({time: this.state.time - 1})
-    }, 1000)
+    this.setWateringPeriodTime(60 * 60 * 24 * 3)
+
+    const interval = setInterval(this.handlePeriodTimeDisplay, 1000)
     this.setState({interval})
 
+  }
+
+  handlePeriodTimeDisplay = () => {
+
+    let wateringPeriodTimeTemp = this.state[WATERING_PERIOD_TIME_TEMP]
+    console.log('yur', wateringPeriodTimeTemp)
+    if (wateringPeriodTimeTemp <= 0) {
+      wateringPeriodTimeTemp = this.state[WATERING_PERIOD_TIME_INITIAL]
+    } else {
+      wateringPeriodTimeTemp = wateringPeriodTimeTemp - 1
+    }
+
+    this.setState({[WATERING_PERIOD_TIME_TEMP]: wateringPeriodTimeTemp})
 
   }
 
@@ -87,9 +104,10 @@ export default class HomeScreen extends Component {
   fetchDurationTimeout = async () => {
     const {navigation} = this.props
 
-    const wateringFromNavigation =  navigation.getParam(WATERING_DURATION)
+    const wateringFromNavigation = navigation.getParam(WATERING_DURATION)
+    const wateringTimeFromNavigation = navigation.getParam(WATERING_TIME)
 
-    if(wateringFromNavigation){
+    if (wateringFromNavigation) {
 
     }
     try {
@@ -100,12 +118,16 @@ export default class HomeScreen extends Component {
     }
   }
 
-  durationTimeout = () => {
+  getDurationTimeout = () => {
     const {navigation} = this.props
 
-    const wateringFromNavigation =  navigation.getParam(WATERING_DURATION) || 0
+    const wateringFromNavigation = navigation.getParam(WATERING_DURATION) || 0
 
     return wateringFromNavigation
+  }
+
+  getPeriodTime = () => {
+    return this.state[WATERING_PERIOD_TIME_TEMP]
   }
 
   goToSettings = async () => {
@@ -116,11 +138,35 @@ export default class HomeScreen extends Component {
     navigate('Settings')
   }
 
+  onScreenReload = async payload => {
+
+    const {navigation} = this.props
+
+    const wateringPeriodFromNavigation = navigation.getParam(WATERING_PERIOD_TIME_INITIAL)
+    if (wateringPeriodFromNavigation) {
+      this.setWateringPeriodTime(wateringPeriodFromNavigation)
+    }
+
+    console.log('will focus', payload)
+  }
+
+  setWateringPeriodTime (wateringPeriodFromNavigation) {
+    console.log('setWateringPeriodTime')
+    this.setState({
+      [WATERING_PERIOD_TIME_INITIAL]: wateringPeriodFromNavigation,
+      [WATERING_PERIOD_TIME_TEMP]: wateringPeriodFromNavigation
+    })
+  }
+
   render () {
-    const durationTimeout = this.durationTimeout()
+    const durationTimeout = this.getDurationTimeout()
+    const wateringPeriod = this.getPeriodTime()
     return (
       <>
         <Container>
+          <NavigationEvents
+            onWillFocus={this.onScreenReload}
+          />
           <ImageBackground source={image} style={{width: '100%', height: '100%'}}>
             <Content padder contentContainerStyle={{height: '100%'}}>
               <StatusBar barStyle="dark-content"/>
@@ -131,9 +177,8 @@ export default class HomeScreen extends Component {
                 <View style={{justifyContent: 'flex-start', borderWidth, borderColor: 'blue', flex: 12}}>
                   <View style={{borderWidth, justifyContent: 'center', alignItems: 'center', flex: 2}}>
                     <Text style={{borderWidth, fontSize: 28}}>Next watering:</Text>
-                    <Text style={{borderWidth, fontSize: 40}}>{msToTime(this.state.time)}</Text>
-                    <Text style={{borderWidth, fontSize: 28}}>watering
-                      duration: {durationTimeout} sec</Text>
+                    <Text style={{borderWidth, fontSize: 40}}>{msToTime(wateringPeriod)}</Text>
+                    <Text style={{borderWidth, fontSize: 28}}>watering for: {durationTimeout} sec</Text>
                   </View>
                   <View style={styles.waterButtons}>
                     <DashboardButton onPress={this.doWater}>water plant</DashboardButton>
@@ -172,7 +217,7 @@ const styles = StyleSheet.create({
   state: {
     backgroundColor: Colors.white,
     borderWidth,
-    flex: 1
+    flex: 3
   },
 
   sectionTitle: {

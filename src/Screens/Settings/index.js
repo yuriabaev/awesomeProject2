@@ -1,10 +1,10 @@
-import { ImageBackground, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native'
+import { ImageBackground, Picker, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native'
 import Slider from '@react-native-community/slider'
 import { Colors } from 'react-native/Libraries/NewAppScreen'
 import React, { Component } from 'react'
 import DashboardButton from '../../Components/DashboardButton'
 import { Container, Content, CardItem, Card, Text } from 'native-base'
-import { WATERING_DURATION } from '../HomeScreen'
+import { WATERING_DURATION, WATERING_PERIOD_TIME_INITIAL } from '../HomeScreen'
 import WateringPeriodSetter from '../../Components/WateringPeriodSetter'
 
 const image = require('../../assets/download.jpg')
@@ -31,13 +31,30 @@ export default class Settings extends Component {
     //Arduino.connect()
   }
 
-  setDurationTimeout = async () => {
+  getPeriodInSeconds = ({periodType, periodValue}) => {
+    const  multipliers ={
+    "Seconds":1,
+    "Minutes":60,
+    "Hours":60*60,
+    "Days":60*60*24,
+    }
+
+    return periodValue*multipliers[periodType]
+  }
+
+  onSave = async () => {
     const {navigate} = this.props.navigation
+
+    const {periodType, periodValue} = this.state
+    const period = this.getPeriodInSeconds({periodType, periodValue})
 
     try {
       //   //await Arduino.setWateringDuration(this.state.desiredDuration)
+      //   //await Arduino.setWateringPeriod(this.state.desiredDuration)
       navigate('Home', {
         [WATERING_DURATION]: this.state.desiredDuration,
+        [WATERING_PERIOD_TIME_INITIAL]: period,
+
       })
     } catch
       (err) {
@@ -83,7 +100,7 @@ export default class Settings extends Component {
                   </View>
                   <WateringPeriodSetter periodType={this.state.periodType} periodValue={this.state.periodValue}
                                         onChange={(state) => {
-                                          console.log('state',state)
+                                          console.log('state', state)
                                           this.setState({
                                             periodType: state.periodType,
                                             periodValue: state.periodValue
@@ -92,7 +109,7 @@ export default class Settings extends Component {
                                         }}/>
                 </View>
                 <View style={{justifyContent: 'center'}}>
-                  <DashboardButton onPress={this.setDurationTimeout}>Save</DashboardButton>
+                  <DashboardButton onPress={this.onSave}>Save</DashboardButton>
                 </View>
               </View>
               <StatusBar barStyle="dark-content"/>

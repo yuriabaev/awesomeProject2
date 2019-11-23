@@ -28,7 +28,7 @@ const WateringPeriodSetter = ({onChange, periodType, periodValue}) => {
             </Text>
             <Picker
               selectedValue={periodType}
-              style={{height: 50, width: 150, borderWidth, borderColor: 'blue',}}
+              style={{ width: 150, borderWidth, borderColor: 'blue',}}
               onValueChange={(itemValue, itemIndex) => {
 
                 onValueChange({periodType: itemValue})
