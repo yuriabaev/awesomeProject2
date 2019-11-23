@@ -6,6 +6,7 @@ import DashboardButton from '../../Components/DashboardButton'
 import { Container, Content, CardItem, Card, Text } from 'native-base'
 import { WATERING_DURATION, WATERING_PERIOD_TIME_INITIAL } from '../HomeScreen'
 import WateringPeriodSetter from '../../Components/WateringPeriodSetter'
+import { isPeriodsEqual } from '../../app'
 
 const image = require('../../assets/download.jpg')
 
@@ -17,10 +18,24 @@ export default class Settings extends Component {
     watering_duration: 0,
     desiredDuration: 0,
     periodType: 'Days',
-    periodValue: 3
+    periodValue: 3,
+    initialDuration:{}
   }
 
   componentDidMount () {
+
+    const {navigation} = this.props
+
+    const duration = navigation.getParam(WATERING_DURATION)
+    const period = navigation.getParam(WATERING_PERIOD_TIME_INITIAL)
+    this.setState({
+      watering_duration: duration,
+      desiredDuration: duration,
+      initialDuration: period,
+      periodType: period.periodType,
+      periodValue: period.periodValue,
+    })
+
     //this.connect()
   }
 
@@ -31,30 +46,20 @@ export default class Settings extends Component {
     //Arduino.connect()
   }
 
-  getPeriodInSeconds = ({periodType, periodValue}) => {
-    const  multipliers ={
-    "Seconds":1,
-    "Minutes":60,
-    "Hours":60*60,
-    "Days":60*60*24,
-    }
-
-    return periodValue*multipliers[periodType]
-  }
-
   onSave = async () => {
     const {navigate} = this.props.navigation
 
-    const {periodType, periodValue} = this.state
-    const period = this.getPeriodInSeconds({periodType, periodValue})
+    const {periodType, periodValue, initialDuration} = this.state
+    const newPeriod = {periodType, periodValue}
 
     try {
       //   //await Arduino.setWateringDuration(this.state.desiredDuration)
-      //   //await Arduino.setWateringPeriod(this.state.desiredDuration)
+      if (!isPeriodsEqual(initialDuration, newPeriod)) {
+        //   //await Arduino.setWateringPeriod(this.state.desiredDuration)
+      }
       navigate('Home', {
         [WATERING_DURATION]: this.state.desiredDuration,
-        [WATERING_PERIOD_TIME_INITIAL]: period,
-
+        [WATERING_PERIOD_TIME_INITIAL]: newPeriod,
       })
     } catch
       (err) {

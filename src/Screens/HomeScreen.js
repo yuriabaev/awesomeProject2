@@ -6,6 +6,7 @@ import DashboardButton from '../Components/DashboardButton'
 import { Colors } from 'react-native/Libraries/NewAppScreen'
 import React, { Component } from 'react'
 import { NavigationEvents } from 'react-navigation'
+import { calcPeriodInSeconds, isPeriodsEqual } from '../app'
 
 const image = require('../assets/download.jpg')
 const log = (...args) => {
@@ -45,24 +46,23 @@ const Reconnect = ({onPress}) => {
     </TouchableHighlight>
   </View>)
 }
-export const WATERING_DURATION = 'watering_duration'
+export const WATERING_DURATION = 'WATERING_DURATION'
 export const WATERING_PERIOD_TIME_INITIAL = 'WATERING_PERIOD_TIME_INITIAL'
-export const WATERING_PERIOD_TIME_TEMP = 'WATERING_PERIOD_TIME_TEMP'
+export const WATERING_PERIOD_TIME_DISPLAY = 'WATERING_PERIOD_TIME_DISPLAY'
 
 export default class HomeScreen extends Component {
   state = {
     connected: false,
-    [WATERING_DURATION]: 0,
-    modal: false,
-    [WATERING_PERIOD_TIME_INITIAL]: 0,
-    [WATERING_PERIOD_TIME_TEMP]: 0,
+    [WATERING_DURATION]: 3,
+    [WATERING_PERIOD_TIME_INITIAL]: {periodType: 'Days', periodValue: 10},
+    [WATERING_PERIOD_TIME_DISPLAY]: 0,
     interval: 0
   }
 
   componentDidMount () {
     this.connect()
-    this.setWateringPeriodTime(60 * 60 * 24 * 3)
-
+    this.setWateringPeriodTime({periodType: 'Days', periodValue: 3})
+    //this.setState({[WATERING_DURATION]: 3})
     const interval = setInterval(this.handlePeriodTimeDisplay, 1000)
     this.setState({interval})
 
@@ -70,15 +70,15 @@ export default class HomeScreen extends Component {
 
   handlePeriodTimeDisplay = () => {
 
-    let wateringPeriodTimeTemp = this.state[WATERING_PERIOD_TIME_TEMP]
-    console.log('yur', wateringPeriodTimeTemp)
+    let wateringPeriodTimeTemp = this.state[WATERING_PERIOD_TIME_DISPLAY]
+
     if (wateringPeriodTimeTemp <= 0) {
-      wateringPeriodTimeTemp = this.state[WATERING_PERIOD_TIME_INITIAL]
+      wateringPeriodTimeTemp = calcPeriodInSeconds(this.state[WATERING_PERIOD_TIME_INITIAL])
     } else {
       wateringPeriodTimeTemp = wateringPeriodTimeTemp - 1
     }
 
-    this.setState({[WATERING_PERIOD_TIME_TEMP]: wateringPeriodTimeTemp})
+    this.setState({[WATERING_PERIOD_TIME_DISPLAY]: wateringPeriodTimeTemp})
 
   }
 
@@ -105,7 +105,6 @@ export default class HomeScreen extends Component {
     const {navigation} = this.props
 
     const wateringFromNavigation = navigation.getParam(WATERING_DURATION)
-    const wateringTimeFromNavigation = navigation.getParam(WATERING_TIME)
 
     if (wateringFromNavigation) {
 
@@ -119,15 +118,13 @@ export default class HomeScreen extends Component {
   }
 
   getDurationTimeout = () => {
-    const {navigation} = this.props
-
-    const wateringFromNavigation = navigation.getParam(WATERING_DURATION) || 0
+    const wateringFromNavigation = this.state[WATERING_DURATION]
 
     return wateringFromNavigation
   }
 
   getPeriodTime = () => {
-    return this.state[WATERING_PERIOD_TIME_TEMP]
+    return this.state[WATERING_PERIOD_TIME_DISPLAY]
   }
 
   goToSettings = async () => {
@@ -135,26 +132,35 @@ export default class HomeScreen extends Component {
 
     const {navigate} = this.props.navigation
 
-    navigate('Settings')
+    navigate('Settings', {
+      [WATERING_DURATION]: this.state[WATERING_DURATION],
+      [WATERING_PERIOD_TIME_INITIAL]: this.state[WATERING_PERIOD_TIME_INITIAL],
+    })
   }
 
   onScreenReload = async payload => {
 
     const {navigation} = this.props
 
-    const wateringPeriodFromNavigation = navigation.getParam(WATERING_PERIOD_TIME_INITIAL)
-    if (wateringPeriodFromNavigation) {
-      this.setWateringPeriodTime(wateringPeriodFromNavigation)
-    }
+    const newPeriod = navigation.getParam(WATERING_PERIOD_TIME_INITIAL)
 
-    console.log('will focus', payload)
+    const newWateringDuration = navigation.getParam(WATERING_DURATION)
+
+    if (newPeriod && !isPeriodsEqual(newPeriod, this.state[WATERING_PERIOD_TIME_INITIAL])) {
+      this.setWateringPeriodTime(newPeriod)
+    }
+    if (newWateringDuration) {
+      this.setState({[WATERING_DURATION]: newWateringDuration})
+    }
+    //console.log('will focus', payload)
   }
 
-  setWateringPeriodTime (wateringPeriodFromNavigation) {
-    console.log('setWateringPeriodTime')
+  setWateringPeriodTime (period) {
+    const periodInSeconds = calcPeriodInSeconds(period)
+
     this.setState({
-      [WATERING_PERIOD_TIME_INITIAL]: wateringPeriodFromNavigation,
-      [WATERING_PERIOD_TIME_TEMP]: wateringPeriodFromNavigation
+      [WATERING_PERIOD_TIME_INITIAL]: period,
+      [WATERING_PERIOD_TIME_DISPLAY]: periodInSeconds
     })
   }
 
@@ -217,7 +223,7 @@ const styles = StyleSheet.create({
   state: {
     backgroundColor: Colors.white,
     borderWidth,
-    flex: 3
+    flex: 1
   },
 
   sectionTitle: {
