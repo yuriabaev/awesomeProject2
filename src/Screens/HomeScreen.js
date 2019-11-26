@@ -16,6 +16,7 @@ import { Colors } from 'react-native/Libraries/NewAppScreen'
 import React, { Component } from 'react'
 import { NavigationEvents } from 'react-navigation'
 import { calcPeriodInSeconds, isPeriodsEqual } from '../app'
+import * as Arduino from './../IntegratedComponents/Arduino'
 
 const image = require('../assets/download.jpg')
 const log = (...args) => {
@@ -62,7 +63,7 @@ export const WATERING_PERIOD_TIME_DISPLAY = 'WATERING_PERIOD_TIME_DISPLAY'
 export default class HomeScreen extends Component {
   state = {
     connected: false,
-    [WATERING_DURATION]: 3,
+    [WATERING_DURATION]: 0,
     [WATERING_PERIOD_TIME_INITIAL]: {periodType: 'Days', periodValue: 10},
     [WATERING_PERIOD_TIME_DISPLAY]: 0,
     interval: 0
@@ -71,14 +72,12 @@ export default class HomeScreen extends Component {
   componentDidMount () {
     this.connect()
     this.setWateringPeriodTime({periodType: 'Days', periodValue: 3})
-    //this.setState({[WATERING_DURATION]: 3})
+    this.setState({[WATERING_DURATION]: 3})
     const interval = setInterval(this.handlePeriodTimeDisplay, 1000)
     this.setState({interval})
-
   }
 
   handlePeriodTimeDisplay = () => {
-
     let wateringPeriodTimeTemp = this.state[WATERING_PERIOD_TIME_DISPLAY]
 
     if (wateringPeriodTimeTemp <= 0) {
@@ -88,26 +87,20 @@ export default class HomeScreen extends Component {
     }
 
     this.setState({[WATERING_PERIOD_TIME_DISPLAY]: wateringPeriodTimeTemp})
-
   }
 
   componentWillUnmount () {
     clearInterval(this.state.interval)
   }
 
-  connect = () => {
+  connect = async () => {
     console.log('connect')
-    //Arduino.connect()
+    await Arduino.connect()
   }
 
   doWater = async () => {
     console.log('watering')
-    try {
-      // await Arduino.water()
-    } catch
-      (err) {
-      log(err.message)
-    }
+    await Arduino.water()
   }
 
   fetchDurationTimeout = async () => {
@@ -196,8 +189,7 @@ export default class HomeScreen extends Component {
                     <Text style={{borderWidth, fontSize: 28}}>watering for: {durationTimeout} sec</Text>
                   </View>
                   <View style={styles.waterButtons}>
-                    <DashboardButton onPress={this.doWater}>water plant</DashboardButton>
-                    <DashboardButton onPress={this.fetchDurationTimeout}>get duration timeout</DashboardButton>
+                    <DashboardButton onPress={this.doWater}>Water</DashboardButton>
                     <DashboardButton onPress={this.goToSettings}>Settings</DashboardButton>
                   </View>
                   <View style={styles.state}>

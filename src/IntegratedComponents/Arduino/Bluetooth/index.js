@@ -7,15 +7,15 @@ export default class Bluetooth {
   }
 
   init = async () => {
-    BluetoothSerial.on('error', (err) => log(`Error: ${err.message}`))
+    BluetoothSerial.on('error', (err) => console.log(`Error: ${err.message}`))
     BluetoothSerial.on('connectionLost', () => {
       if (this.state.device) {
-        log(`Connection to device ${this.state.device.name} has been lost`)
+        console.log(`Connection to device ${this.state.device.name} has been lost`)
       }
       this.setState({connected: false})
     })
     BluetoothSerial.on('read', (data) => {
-      console.log('Reading data: ', data)
+      console.console.log('Reading data: ', data)
       this.setState({response: data})
     })
   }
@@ -34,15 +34,15 @@ export default class Bluetooth {
     ])
       .then((values) => {
         const [isEnabled, devices] = values
-        log('isEnabled,  devices', isEnabled, devices)
+        console.log('isEnabled,  devices', isEnabled, devices)
         this.setState({isEnabled, devices})
         const device = devices.filter((device) => device.name === deviceName)
         BluetoothSerial.connect(device.id)
           .then((res) => {
-            log(`Connected to device  ${device.name}`)
+            console.log(`Connected to device  ${device.name}`)
             this.setState({device, connected: true, connecting: false})
           })
-          .catch((err) => log(err.message))
+          .catch((err) => console.log(err.message))
       })
   }
 
@@ -52,12 +52,12 @@ export default class Bluetooth {
 
         let times = 0
         const intervalId = setInterval(() => {
-          console.log('waiting', this.state.response)
+          console.console.log('waiting', this.state.response)
           times++
           if (this.state.response.data !== '' || times > 3) {
             clearInterval(intervalId)
             const response = this.state.response.data.replace(/\n|\r/g, '')
-            console.log('responding', response)
+            console.console.log('responding', response)
             resolve(response)
           }
         }, 1000)
@@ -68,19 +68,19 @@ export default class Bluetooth {
 
   sendCommand = async (command) => {
     try {
-      log('sending:' + command)
+      console.log('sending:' + command)
       await BluetoothSerial.write(command)
       // const responseWithLineBreaks = await BluetoothSerial.readFromDevice()
-      // log('responseWithLineBreaks: '+responseWithLineBreaks)
+      // console.log('responseWithLineBreaks: '+responseWithLineBreaks)
 
       await BluetoothSerial.withDelimiter('\r\n')
 
       const response = await this.waitForAnswer()
-      log('res:' + response)
+      console.log('res:' + response)
       return response
     } catch
       (err) {
-      log(err.message)
+      console.log(err.message)
     }
   }
 }

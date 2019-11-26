@@ -1,4 +1,4 @@
-import Bluetooth from 'Bluetooth'
+import Bluetooth from './Bluetooth'
 
 const bluetooth = new Bluetooth()
 
