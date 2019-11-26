@@ -7,7 +7,10 @@ import { Container, Content, CardItem, Card, Text } from 'native-base'
 import { WATERING_DURATION, WATERING_PERIOD_TIME_INITIAL } from '../HomeScreen'
 import WateringPeriodSetter from '../../Components/WateringPeriodSetter'
 import { isPeriodsEqual } from '../../app'
-
+import * as Arduino from '../../IntegratedComponents/Arduino'
+import Toast from '../../utils/Toast'
+import { calcPeriodInSeconds } from '../../app'
+import Period from '../../utils/Period'
 const image = require('../../assets/download.jpg')
 
 const borderWidth = 0
@@ -19,7 +22,7 @@ export default class Settings extends Component {
     desiredDuration: 0,
     periodType: 'Days',
     periodValue: 3,
-    initialDuration:{}
+    initialDuration: {}
   }
 
   componentDidMount () {
@@ -28,42 +31,40 @@ export default class Settings extends Component {
 
     const duration = navigation.getParam(WATERING_DURATION)
     const period = navigation.getParam(WATERING_PERIOD_TIME_INITIAL)
+    console.log('componentDidMount,period',period)
     this.setState({
       watering_duration: duration,
       desiredDuration: duration,
       initialDuration: period,
-      periodType: period.periodType,
-      periodValue: period.periodValue,
+      periodType: period.type,
+      periodValue: period.value,
     })
 
-    //this.connect()
-  }
-
-  componentWillUnmount () {
-  }
-
-  connect = () => {
-    //Arduino.connect()
   }
 
   onSave = async () => {
     const {navigate} = this.props.navigation
 
     const {periodType, periodValue, initialDuration} = this.state
-    const newPeriod = {periodType, periodValue}
+    console.log('periodType, periodValue',periodType, periodValue)
+    const newPeriod = new Period(periodValue, periodType)
+    Toast.show({msg: 'saving'})
 
     try {
-      //   //await Arduino.setWateringDuration(this.state.desiredDuration)
+      //await Arduino.setWateringDuration(this.state.desiredDuration)
+
       if (!isPeriodsEqual(initialDuration, newPeriod)) {
-        //   //await Arduino.setWateringPeriod(this.state.desiredDuration)
+        console.log('calcPeriodInSeconds(newPeriod)',calcPeriodInSeconds(newPeriod))
+        await Arduino.setWateringPeriod(calcPeriodInSeconds(newPeriod))
       }
+      Toast.success({msg: 'saved'})
       navigate('Home', {
         [WATERING_DURATION]: this.state.desiredDuration,
         [WATERING_PERIOD_TIME_INITIAL]: newPeriod,
       })
-    } catch
-      (err) {
-      log(err.message)
+    } catch (err) {
+      console.log('err', err)
+      Toast.error({msg: err.message})
     }
   }
 

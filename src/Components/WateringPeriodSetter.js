@@ -24,7 +24,7 @@ const WateringPeriodSetter = ({onChange, periodType, periodValue}) => {
               every
             </Text>
             <Text style={styles.durationText} border={1}>
-              3
+              {periodValue}
             </Text>
             <Picker
               selectedValue={periodType}

@@ -6,7 +6,7 @@
  * @flow
  */
 import React  from 'react'
-
+import { Root } from "native-base";
 import HomeScreen from './src/Screens/HomeScreen'
 import Settings from './src/Screens/Settings'
 
@@ -27,4 +27,7 @@ const MainNavigator = createStackNavigator({
 
 const App = createAppContainer(MainNavigator);
 
-export default App;
+export default () =>
+  <Root>
+    <App />
+  </Root>;

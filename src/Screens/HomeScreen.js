@@ -17,7 +17,8 @@ import React, { Component } from 'react'
 import { NavigationEvents } from 'react-navigation'
 import { calcPeriodInSeconds, isPeriodsEqual } from '../app'
 import * as Arduino from './../IntegratedComponents/Arduino'
-
+import Toast from '../utils/Toast'
+import Period from '../utils/Period'
 const image = require('../assets/download.jpg')
 const log = (...args) => {
   console.log(...args)
@@ -64,14 +65,14 @@ export default class HomeScreen extends Component {
   state = {
     connected: false,
     [WATERING_DURATION]: 0,
-    [WATERING_PERIOD_TIME_INITIAL]: {periodType: 'Days', periodValue: 10},
+    [WATERING_PERIOD_TIME_INITIAL]: new Period(10,'Days'),
     [WATERING_PERIOD_TIME_DISPLAY]: 0,
     interval: 0
   }
 
   componentDidMount () {
     this.connect()
-    this.setWateringPeriodTime({periodType: 'Days', periodValue: 3})
+    this.setWateringPeriodTime(new Period(4,'Days'))
     this.setState({[WATERING_DURATION]: 3})
     const interval = setInterval(this.handlePeriodTimeDisplay, 1000)
     this.setState({interval})
@@ -94,12 +95,13 @@ export default class HomeScreen extends Component {
   }
 
   connect = async () => {
-    console.log('connect')
+    Toast.show({msg: 'connecting..'})
     await Arduino.connect()
   }
 
   doWater = async () => {
-    console.log('watering')
+    Toast.show({msg: 'watering'})
+
     await Arduino.water()
   }
 

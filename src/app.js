@@ -1,5 +1,6 @@
 export const calcPeriodInSeconds = (period) => {
-  const {periodType, periodValue} = period
+  const {type, value} = period
+
   const multipliers = {
     'Seconds': 1,
     'Minutes': 60,
@@ -7,9 +8,9 @@ export const calcPeriodInSeconds = (period) => {
     'Days': 60 * 60 * 24,
   }
 
-  return periodValue * multipliers[periodType]
+  return value * multipliers[type]
 }
 
 export const isPeriodsEqual = (period, otherPeriod) => {
-  return (period.periodType === otherPeriod.periodType && period.periodValue === otherPeriod.periodValue)
+  return (period.type === otherPeriod.type && period.value === otherPeriod.value)
 }
