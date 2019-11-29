@@ -25,15 +25,15 @@ const styles = StyleSheet.create({
     color:'#505050',
     textAlign: 'center',
     textAlignVertical: 'center',
-    fontSize:22,
+    fontSize:20,
     fontWeight:'bold',
     margin: 10
   },
   button: {
     borderRadius: 100,
     backgroundColor: '#3CD57E',
-    width: 110,
-    height: 110,
+    width: 90,
+    height: 90,
   },
   waterButtons_btns2: {
     color: 'green',

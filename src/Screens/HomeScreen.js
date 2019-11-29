@@ -192,14 +192,25 @@ export default class HomeScreen extends Component {
               {/*<ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>*/}
               {!this.state.connected && <Reconnect onPress={this.connect}/>}
 
-              <View style={{justifyContent: 'flex-start', borderWidth, borderColor: 'blue', flex: 12}}>
-                <View style={{borderWidth, justifyContent: 'center', alignItems: 'center', flex: 2}}>
-                  <Text style={{borderWidth, fontSize: 28}}>Next watering:</Text>
-                  <Text style={{borderWidth, fontSize: 40}}>{msToTime(wateringPeriod)}</Text>
-                  <Text style={{borderWidth, fontSize: 28}}>watering for: {durationTimeout} sec</Text>
-                </View>
-
+              <View style={{justifyContent: 'flex-end', borderWidth, borderColor: 'blue', flex: 12}}>
                 <View style={styles.background}>
+                  <View style={{
+                    borderWidth,
+                    flexDirection: 'row',
+                    justifyContent: 'space-around',
+                    alignItems: 'center',
+                    flex: 2
+                  }}>
+                    <View style={{borderWidth, justifyContent: 'center', alignItems: 'center',width:'50%'}}>
+                      <Text style={{borderWidth, fontSize: 25, color: '#505050', fontWeight: 'bold'}}>Watering In</Text>
+                      <Text style={{borderWidth, fontSize: 20, color: '#505050'}}>{msToTime(wateringPeriod)}</Text>
+                    </View>
+                    <View style={{borderWidth, justifyContent: 'center', alignItems: 'center',width:'50%'}}>
+                      <Text style={{borderWidth, fontSize: 25, color: '#505050', fontWeight: 'bold'}}>Duration</Text>
+                      <Text style={{borderWidth, fontSize: 20, color: '#505050'}}>{durationTimeout} sec</Text>
+                    </View>
+                  </View>
+
                   <View style={styles.waterButtons}>
                     <DashboardButton onPress={this.doWater} icon={faTint}>Water</DashboardButton>
                     <DashboardButton onPress={this.goToSettings} icon={faSlidersH}>Settings</DashboardButton>
@@ -247,15 +258,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     //alignItems:'flex-start',
     justifyContent: 'space-around',
-    flex: 2,
+    flex: 4,
     //height: '35%'
 
   },
   background: {
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
     width: '100%',
-    flex: 4,
+    height: '80%',
+    justifyContent:'space-around'
   },
 
   reconnect: {
