@@ -10,7 +10,7 @@ import {
   ScrollView
 } from 'react-native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faSyncAlt } from '@fortawesome/free-solid-svg-icons'
+import { faSyncAlt, faTint, faSlidersH } from '@fortawesome/free-solid-svg-icons'
 import DashboardButton from '../Components/DashboardButton'
 import { Colors } from 'react-native/Libraries/NewAppScreen'
 import React, { Component } from 'react'
@@ -19,6 +19,7 @@ import { calcPeriodInSeconds, isPeriodsEqual } from '../app'
 import * as Arduino from './../IntegratedComponents/Arduino'
 import Toast from '../utils/Toast'
 import Period from '../utils/Period'
+
 const image = require('../assets/download.jpg')
 const log = (...args) => {
   console.log(...args)
@@ -61,18 +62,26 @@ export const WATERING_DURATION = 'WATERING_DURATION'
 export const WATERING_PERIOD_TIME_INITIAL = 'WATERING_PERIOD_TIME_INITIAL'
 export const WATERING_PERIOD_TIME_DISPLAY = 'WATERING_PERIOD_TIME_DISPLAY'
 
+const Status = function (state) {
+  return (<View style={styles.state}>
+    <ScrollView>
+      <Text style={styles.sectionTitle}>{JSON.stringify(state, null, 2)}</Text>
+    </ScrollView>
+  </View>)
+}
+
 export default class HomeScreen extends Component {
   state = {
     connected: false,
     [WATERING_DURATION]: 0,
-    [WATERING_PERIOD_TIME_INITIAL]: new Period(10,'Days'),
+    [WATERING_PERIOD_TIME_INITIAL]: new Period(10, 'Days'),
     [WATERING_PERIOD_TIME_DISPLAY]: 0,
     interval: 0
   }
 
   componentDidMount () {
     this.connect()
-    this.setWateringPeriodTime(new Period(4,'Days'))
+    this.setWateringPeriodTime(new Period(4, 'Days'))
     this.setState({[WATERING_DURATION]: 3})
     const interval = setInterval(this.handlePeriodTimeDisplay, 1000)
     this.setState({interval})
@@ -178,31 +187,29 @@ export default class HomeScreen extends Component {
             onWillFocus={this.onScreenReload}
           />
           <ImageBackground source={image} style={{width: '100%', height: '100%'}}>
-            <Content padder contentContainerStyle={{height: '100%'}}>
-              <StatusBar barStyle="dark-content"/>
-              <SafeAreaView style={{borderWidth, borderColor: 'red', height: '100%'}}>
-                {/*<ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>*/}
-                {!this.state.connected && <Reconnect onPress={this.connect}/>}
+            {/*<Content padder contentContainerStyle={{height: '100%'}}>*/}
+            <SafeAreaView style={{borderWidth, borderColor: 'red', height: '100%'}}>
+              {/*<ScrollView contentInsetAdjustmentBehavior="automatic" style={styles.scrollView}>*/}
+              {!this.state.connected && <Reconnect onPress={this.connect}/>}
 
-                <View style={{justifyContent: 'flex-start', borderWidth, borderColor: 'blue', flex: 12}}>
-                  <View style={{borderWidth, justifyContent: 'center', alignItems: 'center', flex: 2}}>
-                    <Text style={{borderWidth, fontSize: 28}}>Next watering:</Text>
-                    <Text style={{borderWidth, fontSize: 40}}>{msToTime(wateringPeriod)}</Text>
-                    <Text style={{borderWidth, fontSize: 28}}>watering for: {durationTimeout} sec</Text>
-                  </View>
+              <View style={{justifyContent: 'flex-start', borderWidth, borderColor: 'blue', flex: 12}}>
+                <View style={{borderWidth, justifyContent: 'center', alignItems: 'center', flex: 2}}>
+                  <Text style={{borderWidth, fontSize: 28}}>Next watering:</Text>
+                  <Text style={{borderWidth, fontSize: 40}}>{msToTime(wateringPeriod)}</Text>
+                  <Text style={{borderWidth, fontSize: 28}}>watering for: {durationTimeout} sec</Text>
+                </View>
+
+                <View style={styles.background}>
                   <View style={styles.waterButtons}>
-                    <DashboardButton onPress={this.doWater}>Water</DashboardButton>
-                    <DashboardButton onPress={this.goToSettings}>Settings</DashboardButton>
-                  </View>
-                  <View style={styles.state}>
-                    <ScrollView>
-                      <Text style={styles.sectionTitle}>{JSON.stringify(this.state, null, 2)}</Text>
-                    </ScrollView>
+                    <DashboardButton onPress={this.doWater} icon={faTint}>Water</DashboardButton>
+                    <DashboardButton onPress={this.goToSettings} icon={faSlidersH}>Settings</DashboardButton>
                   </View>
                 </View>
-                {/*</ScrollView>*/}
-              </SafeAreaView>
-            </Content>
+                {/*<Status state={this.state}/>*/}
+              </View>
+              {/*</ScrollView>*/}
+            </SafeAreaView>
+            {/*</Content>*/}
           </ImageBackground>
         </Container>
       </>
@@ -237,11 +244,18 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
   waterButtons: {
-    // flexDirection: 'row',
-    justifyContent: 'flex-start',
+    flexDirection: 'row',
+    //alignItems:'flex-start',
+    justifyContent: 'space-around',
     flex: 2,
     //height: '35%'
 
+  },
+  background: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 40,
+    width: '100%',
+    flex: 4,
   },
 
   reconnect: {

@@ -114,7 +114,7 @@ export default class Settings extends Component {
 
                                         }}/>
                 </View>
-                <View style={{justifyContent: 'center'}}>
+                <View style={{alignItems: 'center'}}>
                   <DashboardButton onPress={this.onSave}>Save</DashboardButton>
                 </View>
               </View>
